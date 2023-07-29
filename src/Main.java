@@ -10,13 +10,8 @@ public class Main {
         try {
             makeRecord();
             System.out.println("success");
-        }catch (FileSystemException e){
-            System.out.println(e.getMessage());
-        }
-        catch (IllegalArgumentException e){
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
     }
@@ -33,7 +28,7 @@ public class Main {
 
         String[] array = text.split(" ");
         if (array.length != 6){
-            throw new SplitDataException("Введено неверное количество параметров " + Arrays.toString(array));
+            throw new SplitDataException("Введено неверное количество параметров, ожидается = 6, " + "получено = " + array.length);
         }
 
         String surname = array[0];
@@ -44,20 +39,23 @@ public class Main {
         Date birthdate;
         try {
             birthdate = format.parse(array[3]);
-        }catch (ParseException e){
-            throw new ParseException("Неверный формат даты рождения", e.getErrorOffset());
+            if(array[3].length() != 10){
+                throw new FormatParseException("Неверный формат даты рождения, ожидается dd.mm.yyyy, получено = " + array[3]);
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
 
         int phone;
         try {
             phone = Integer.parseInt(array[4]);
         }catch (NumberFormatException e){
-            throw new NumberPhoneException("Неверный формат телефона " + array[4]);
+            throw new NumberPhoneException("Неверный формат телефона, ожидается 1234567, получено = " + array[4]);
         }
 
         String sex = array[5];
         if (!sex.toLowerCase().equals("m") && !sex.toLowerCase().equals("f")){
-            throw new RuntimeException("Неверно введен пол " + sex);
+            throw new RuntimeException("Неверно введен пол, ожидается 'f' или 'm', получено = " + sex);
         }
 
         String fileName = surname.toLowerCase() + ".txt";
